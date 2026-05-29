@@ -47,23 +47,11 @@
   .ring svg { transform: rotate(-90deg); display: block; }
   .ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text); }
   .ring-lbl { font-size: 10px; color: var(--text3); }
-
-  /* DATE PICKER ROW */
   .date-row { display: flex; align-items: center; gap: 8px; padding: 10px 16px 14px; border-top: 0.5px solid var(--border); }
   .date-lbl { font-size: 11px; color: var(--text3); flex-shrink: 0; }
-  .date-inp {
-    flex: 1; border: 0.5px solid var(--border2); background: var(--bg2);
-    border-radius: 8px; padding: 7px 10px;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text);
-    outline: none;
-  }
+  .date-inp { flex: 1; border: 0.5px solid var(--border2); background: var(--bg2); border-radius: 8px; padding: 7px 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; }
   .date-inp:focus { border-color: var(--green); }
-  .date-today {
-    padding: 7px 12px; border-radius: 8px; border: 0.5px solid var(--border2);
-    background: transparent; font-family: 'DM Sans', sans-serif;
-    font-size: 11px; color: var(--text2); cursor: pointer; white-space: nowrap;
-  }
-  .date-today:active { background: var(--bg2); }
+  .date-today { padding: 7px 12px; border-radius: 8px; border: 0.5px solid var(--border2); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--text2); cursor: pointer; white-space: nowrap; }
 
   /* STEPS */
   .steps { display: flex; background: var(--bg); border-radius: var(--r); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow); }
@@ -72,6 +60,7 @@
   .step-btn .step-icon { font-size: 16px; display: block; margin-bottom: 2px; }
   .step-btn.active { background: var(--text); color: var(--bg); }
   .step-btn.done-s { color: var(--green); }
+  .step-btn.has-neg { color: var(--red); }
 
   /* PANELS */
   .panel { display: none; flex-direction: column; gap: 12px; }
@@ -84,16 +73,33 @@
   .card-head-title { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
   .card-head-hint { font-size: 10px; color: var(--text3); }
 
-  /* TOGGLES */
-  .tgl { display: flex; align-items: center; gap: 12px; padding: 11px 14px; cursor: pointer; user-select: none; transition: background 0.1s; -webkit-user-select: none; }
-  .tgl:active { background: var(--bg2); }
-  .tgl + .tgl { border-top: 0.5px solid var(--border); }
-  .tgl-box { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .tgl-box svg { opacity: 0; transition: opacity 0.12s; }
-  .tgl.on .tgl-box { background: var(--green-bg); border-color: transparent; }
-  .tgl.on .tgl-box svg { opacity: 1; }
-  .tgl-text { font-size: 14px; color: var(--text); flex: 1; line-height: 1.4; transition: color 0.13s; }
-  .tgl.on .tgl-text { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--border2); }
+  /* TRI-STATE ITEM : neutre → fait → pas fait → neutre */
+  .titem { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; user-select: none; -webkit-user-select: none; transition: background 0.1s; }
+  .titem:active { background: var(--bg2); }
+  .titem + .titem { border-top: 0.5px solid var(--border); }
+  .titem-btn {
+    width: 48px; height: 26px; border-radius: 13px;
+    border: 1.5px solid var(--border2);
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; gap: 3px;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .titem-btn .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border2); transition: all 0.18s; flex-shrink: 0;
+  }
+  .titem.state-yes .titem-btn { background: var(--green-bg); border-color: var(--green); }
+  .titem.state-yes .titem-btn .dot { background: var(--green); }
+  .titem.state-no  .titem-btn { background: var(--red-bg);   border-color: var(--red); }
+  .titem.state-no  .titem-btn .dot { background: var(--red); }
+  .titem-label { font-size: 10px; font-weight: 500; min-width: 18px; text-align: center; transition: color 0.15s; color: var(--text3); }
+  .titem.state-yes .titem-label { color: var(--green); }
+  .titem.state-no  .titem-label { color: var(--red); }
+  .titem-text { font-size: 13px; color: var(--text); flex: 1; line-height: 1.4; transition: color 0.13s; }
+  .titem.state-yes .titem-text { color: var(--text3); text-decoration: line-through; text-decoration-color: rgba(29,158,117,0.4); }
+  .titem.state-no  .titem-text { color: var(--red-dark); }
 
   /* METRICS */
   .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; }
@@ -128,8 +134,14 @@
 
   /* NOTE */
   .note-wrap { padding: 10px 14px; }
-  .note-inp { width: 100%; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); resize: none; outline: none; min-height: 60px; line-height: 1.7; }
+  .note-inp { width: 100%; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); resize: none; outline: none; min-height: 58px; line-height: 1.7; }
   .note-inp::placeholder { color: var(--text3); font-style: italic; }
+
+  /* ECART BLOCK */
+  .ecart-block { padding: 10px 14px 12px; border-top: 0.5px solid var(--border); }
+  .ecart-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 7px; }
+  .ecart-inp { width: 100%; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--red-dark); resize: none; outline: none; min-height: 40px; line-height: 1.6; }
+  .ecart-inp::placeholder { color: var(--text3); font-style: italic; font-size: 12px; }
 
   /* NAV */
   .nav { display: flex; gap: 8px; margin-top: 4px; }
@@ -140,7 +152,7 @@
   .nav-btn.success { background: var(--green); color: white; border-color: var(--green); }
   .nav-btn.loading { opacity: 0.55; pointer-events: none; }
 
-  /* KEY BLOCK */
+  /* KEY */
   .key-block { background: var(--bg); border-radius: var(--r); padding: 14px; box-shadow: var(--shadow); margin-bottom: 16px; }
   .key-title { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
   .key-title i { font-size: 14px; }
@@ -153,37 +165,39 @@
   /* STATUS */
   .status { display: none; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-top: 4px; line-height: 1.5; }
   .status i { font-size: 16px; flex-shrink: 0; }
-  .status.ok   { display: flex; background: var(--green-bg);  color: var(--green-dark); }
-  .status.err  { display: flex; background: var(--red-bg);    color: var(--red-dark); }
-  .status.info { display: flex; background: var(--blue-bg);   color: var(--blue-dark); }
+  .status.ok   { display: flex; background: var(--green-bg); color: var(--green-dark); }
+  .status.err  { display: flex; background: var(--red-bg);   color: var(--red-dark); }
+  .status.info { display: flex; background: var(--blue-bg);  color: var(--blue-dark); }
 
   /* STREAK */
   .streak-block { padding: 10px 14px 12px; }
   .streak-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
   .streak-dots { display: flex; gap: 4px; flex-wrap: wrap; }
-  .sdot { width: 12px; height: 12px; border-radius: 50%; background: var(--border2); transition: background 0.2s; }
+  .sdot { width: 12px; height: 12px; border-radius: 50%; background: var(--border2); }
   .sdot.ok { background: var(--green); }
-  .sdot.today { background: var(--red); transform: scale(1.2); }
+  .sdot.nok { background: var(--red); }
+  .sdot.today { background: var(--amber); transform: scale(1.2); }
 
-  @keyframes pop { 0%{transform:scale(0.65)} 65%{transform:scale(1.18)} 100%{transform:scale(1)} }
-  .tgl.just-on .tgl-box { animation: pop 0.22s ease; }
-  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  .panel.active { animation: fadein 0.18s ease; }
+  /* LEGEND */
+  .legend { display: flex; gap: 12px; padding: 8px 14px; border-top: 0.5px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text3); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  @keyframes pop { 0%{transform:scale(0.7)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .titem.just-changed .titem-btn { animation: pop 0.2s ease; }
+  @keyframes fadein { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+  .panel.active { animation: fadein 0.17s ease; }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- KEY BLOCK -->
+  <!-- KEY -->
   <div class="key-block" id="key-block">
     <div class="key-title"><i class="ti ti-key"></i> Clé API Notion (une seule fois)</div>
     <input class="key-inp" id="notion-key" type="password" placeholder="secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-    <div class="key-hint">
-      Récupère ta clé sur <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
-      → créer une intégration → copier la clé interne.<br>
-      Ensuite dans ta base Notion → ··· → Connexions → ajouter l'intégration.
-    </div>
-    <button class="key-save-btn" onclick="saveKey()">Enregistrer la clé</button>
+    <div class="key-hint">→ <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a> · créer intégration · copier la clé<br>→ Dans ta base Notion : ··· → Connexions → ajouter l'intégration</div>
+    <button class="key-save-btn" onclick="saveKey()">Enregistrer</button>
   </div>
 
   <!-- HEADER -->
@@ -198,21 +212,27 @@
         <div class="ring">
           <svg width="56" height="56" viewBox="0 0 56 56">
             <circle cx="28" cy="28" r="22" fill="none" stroke="var(--border2)" stroke-width="3.5"/>
-            <circle id="rprog" cx="28" cy="28" r="22" fill="none" stroke="#E24B4A"
-              stroke-width="3.5" stroke-linecap="round"
-              stroke-dasharray="138.2" stroke-dashoffset="138.2"
-              style="transition:stroke-dashoffset .35s,stroke .35s"/>
+            <circle id="rprog" cx="28" cy="28" r="22" fill="none" stroke="#E24B4A" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" style="transition:stroke-dashoffset .35s,stroke .35s"/>
           </svg>
-          <div class="ring-num" id="rnum">0%</div>
+          <div class="ring-num" id="rnum">—</div>
         </div>
         <span class="ring-lbl">score</span>
       </div>
     </div>
-    <!-- DATE PICKER -->
     <div class="date-row">
       <span class="date-lbl"><i class="ti ti-calendar" style="font-size:13px;vertical-align:-2px;margin-right:3px;"></i>Date</span>
       <input class="date-inp" type="date" id="date-picker" onchange="onDateChange()">
       <button class="date-today" onclick="setToday()">Aujourd'hui</button>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--border2)"></div>Non renseigné</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Fait ✓</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Pas fait ✗</div>
+      <div class="legend-item" style="margin-left:auto;font-size:10px;color:var(--text3);">1 tap = ✓ · 2 taps = ✗ · 3 taps = reset</div>
     </div>
   </div>
 
@@ -229,17 +249,20 @@
   <div class="panel active" id="p0">
     <div class="card">
       <div class="card-head"><i class="ti ti-sun"></i><span class="card-head-title">Routine matin</span></div>
-      <div class="tgl" data-grp="0" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Réveil tôt — heure fixe respectée</span>
+      <div class="titem" data-grp="0" data-key="reveil" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Réveil tôt — heure fixe</span>
       </div>
-      <div class="tgl" data-grp="0" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Grand verre d'eau avant le café</span>
+      <div class="titem" data-grp="0" data-key="eau-matin" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Grand verre d'eau avant le café</span>
       </div>
-      <div class="tgl" data-grp="0" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Lecture WHOOP — recovery noté</span>
+      <div class="titem" data-grp="0" data-key="whoop-matin" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Lecture WHOOP — recovery noté</span>
       </div>
     </div>
     <div class="card">
@@ -247,7 +270,7 @@
       <div class="metric-row">
         <div class="mc">
           <div class="mc-lbl">Recovery %</div>
-          <input class="mc-inp" id="m-rec" type="number" min="0" max="100" placeholder="—" inputmode="numeric">
+          <input class="mc-inp" id="m-rec" type="number" min="0" max="100" placeholder="—" inputmode="numeric" oninput="updateRecSub()">
           <div class="mc-sub" id="rec-sub"></div>
         </div>
         <div class="mc">
@@ -263,9 +286,9 @@
     <div class="card">
       <div class="card-head"><i class="ti ti-stethoscope"></i><span class="card-head-title">État de santé</span></div>
       <div class="chips" id="sante-chips">
-        <span class="chip" data-val="Forme" data-color="green" onclick="solo(this,'sante-chips')">💚 Forme</span>
-        <span class="chip" data-val="Fatigué" data-color="amber" onclick="solo(this,'sante-chips')">🟡 Fatigué</span>
-        <span class="chip" data-val="Malade/KO" data-color="red" onclick="solo(this,'sante-chips')">🔴 Malade/KO</span>
+        <span class="chip" data-val="Forme"      data-color="green" onclick="solo(this,'sante-chips')">💚 Forme</span>
+        <span class="chip" data-val="Fatigué"    data-color="amber" onclick="solo(this,'sante-chips')">🟡 Fatigué</span>
+        <span class="chip" data-val="Malade/KO"  data-color="red"   onclick="solo(this,'sante-chips')">🔴 Malade/KO</span>
       </div>
     </div>
     <div class="nav"><button class="nav-btn primary" onclick="goStep(1)">Corps →</button></div>
@@ -275,17 +298,20 @@
   <div class="panel" id="p1">
     <div class="card">
       <div class="card-head"><i class="ti ti-run"></i><span class="card-head-title">Mouvement</span></div>
-      <div class="tgl" data-grp="1" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Marche / activité principale faite</span>
+      <div class="titem" data-grp="1" data-key="sport" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Marche / activité principale faite</span>
       </div>
-      <div class="tgl" data-grp="1" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Mobilité / étirements (10 min)</span>
+      <div class="titem" data-grp="1" data-key="mobilite" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Mobilité / étirements (10 min)</span>
       </div>
-      <div class="tgl" data-grp="1" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">8 verres d'eau dans la journée</span>
+      <div class="titem" data-grp="1" data-key="hydratation" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">8 verres d'eau dans la journée</span>
       </div>
     </div>
     <div class="card">
@@ -307,12 +333,13 @@
     <div class="card">
       <div class="card-head"><i class="ti ti-activity"></i><span class="card-head-title">Type d'activité</span></div>
       <div class="chips" id="act-chips">
-        <span class="chip" data-val="Marche" data-color="green" onclick="solo(this,'act-chips')">Marche</span>
-        <span class="chip" data-val="Mobilité" data-color="blue" onclick="solo(this,'act-chips')">Mobilité</span>
-        <span class="chip" data-val="Renforcement" data-color="amber" onclick="solo(this,'act-chips')">Renforcement</span>
-        <span class="chip" data-val="Cardio" data-color="red" onclick="solo(this,'act-chips')">Cardio</span>
+        <span class="chip" data-val="Marche"         data-color="green"  onclick="solo(this,'act-chips')">Marche</span>
+        <span class="chip" data-val="Mobilité"        data-color="blue"   onclick="solo(this,'act-chips')">Mobilité</span>
+        <span class="chip" data-val="Renforcement"    data-color="amber"  onclick="solo(this,'act-chips')">Renforcement</span>
+        <span class="chip" data-val="Cardio"          data-color="red"    onclick="solo(this,'act-chips')">Cardio</span>
         <span class="chip" data-val="Yoga/Stretching" data-color="purple" onclick="solo(this,'act-chips')">Yoga</span>
-        <span class="chip" data-val="Repos actif" data-color="green" onclick="solo(this,'act-chips')">Repos actif</span>
+        <span class="chip" data-val="Repos actif"     data-color="green"  onclick="solo(this,'act-chips')">Repos actif</span>
+        <span class="chip" data-val="Aucune"          data-color="red"    onclick="solo(this,'act-chips')">Aucune activité</span>
       </div>
     </div>
     <div class="nav">
@@ -325,21 +352,29 @@
   <div class="panel" id="p2">
     <div class="card">
       <div class="card-head"><i class="ti ti-apple"></i><span class="card-head-title">Alimentation</span></div>
-      <div class="tgl" data-grp="2" id="tgl-sucre" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Zéro sucre ajouté 🔑</span>
+      <div class="titem" data-grp="2" data-key="sucre" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Zéro sucre ajouté 🔑</span>
       </div>
-      <div class="tgl" data-grp="2" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Protéines à chaque repas</span>
+      <div class="titem" data-grp="2" data-key="proteines" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Protéines à chaque repas</span>
       </div>
-      <div class="tgl" data-grp="2" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Repas structurés — pas de grignotage</span>
+      <div class="titem" data-grp="2" data-key="repas-struct" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Repas structurés — pas de grignotage</span>
       </div>
-      <div class="tgl" data-grp="2" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Dîner léger avant 20h</span>
+      <div class="titem" data-grp="2" data-key="diner-leger" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Dîner léger avant 20h</span>
+      </div>
+      <div class="ecart-block" id="ecart-alim-block" style="display:none;">
+        <div class="ecart-label">📝 Note sur l'écart</div>
+        <textarea class="ecart-inp" id="ecart-alim" placeholder="Ce que j'ai mangé, le contexte, pourquoi…" rows="2"></textarea>
       </div>
     </div>
     <div class="card">
@@ -369,17 +404,20 @@
   <div class="panel" id="p3">
     <div class="card">
       <div class="card-head"><i class="ti ti-brain"></i><span class="card-head-title">Mental & récupération</span></div>
-      <div class="tgl" data-grp="3" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Méditation / respiration (5 min)</span>
+      <div class="titem" data-grp="3" data-key="meditation" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Méditation / respiration (5 min)</span>
       </div>
-      <div class="tgl" data-grp="3" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Note Diarly écrite ce soir</span>
+      <div class="titem" data-grp="3" data-key="diarly" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Note Diarly écrite ce soir</span>
       </div>
-      <div class="tgl" data-grp="3" onclick="tgl(this)">
-        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="tgl-text">Écrans off 1h avant coucher</span>
+      <div class="titem" data-grp="3" data-key="ecrans" onclick="tristate(this)">
+        <div class="titem-btn"><div class="dot"></div></div>
+        <span class="titem-label">—</span>
+        <span class="titem-text">Écrans off 1h avant coucher</span>
       </div>
     </div>
     <div class="card">
@@ -387,7 +425,7 @@
       <div class="chips" id="stress-chips">
         <span class="chip" data-val="😌 Faible" data-color="green" onclick="solo(this,'stress-chips')">😌 Faible</span>
         <span class="chip" data-val="⚡ Modéré" data-color="amber" onclick="solo(this,'stress-chips')">⚡ Modéré</span>
-        <span class="chip" data-val="🔥 Élevé" data-color="red" onclick="solo(this,'stress-chips')">🔥 Élevé</span>
+        <span class="chip" data-val="🔥 Élevé"  data-color="red"   onclick="solo(this,'stress-chips')">🔥 Élevé</span>
       </div>
     </div>
     <div class="nav">
@@ -415,6 +453,12 @@
       </div>
     </div>
     <div class="card">
+      <div class="card-head"><i class="ti ti-alert-triangle" style="color:var(--amber)"></i><span class="card-head-title">Écarts & difficultés</span><span class="card-head-hint">facultatif</span></div>
+      <div class="note-wrap">
+        <textarea class="note-inp" id="ecarts-global" placeholder="Ce qui n'a pas marché aujourd'hui — sans jugement, juste pour comprendre…" rows="3" style="color:var(--text2);"></textarea>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-head"><i class="ti ti-arrow-right"></i><span class="card-head-title">Intention demain</span></div>
       <div class="note-wrap">
         <textarea class="note-inp" id="intention" placeholder="La chose la plus importante de demain…" rows="2"></textarea>
@@ -434,31 +478,32 @@ const DS_ID = '335f389b-0d1f-4cad-96cb-a12870b28eed';
 const START_DATE = new Date('2026-05-29');
 let pas = 0, eauVal = 0, streak = 0;
 
+// État tristate : 0=neutre, 1=oui, -1=non
+const states = {};
+
 function init() {
   const saved = localStorage.getItem('notion_key_90j');
-  if (saved) {
-    document.getElementById('notion-key').value = saved;
-    document.getElementById('key-block').style.display = 'none';
-  }
+  if (saved) { document.getElementById('notion-key').value = saved; document.getElementById('key-block').style.display = 'none'; }
   streak = parseInt(localStorage.getItem('streak_90j') || '0');
   renderStreak();
   setToday();
-  document.getElementById('m-rec').addEventListener('input', updateRecSub);
   updateScore();
 }
 
+function saveKey() {
+  const k = document.getElementById('notion-key').value.trim();
+  if (k) { localStorage.setItem('notion_key_90j', k); document.getElementById('key-block').style.display = 'none'; }
+}
+
 function setToday() {
-  const d = new Date();
-  const iso = d.toISOString().split('T')[0];
+  const iso = new Date().toISOString().split('T')[0];
   document.getElementById('date-picker').value = iso;
-  updateHeader(d);
+  updateHeader(new Date());
 }
 
 function onDateChange() {
   const val = document.getElementById('date-picker').value;
-  if (!val) return;
-  const d = new Date(val + 'T12:00:00');
-  updateHeader(d);
+  if (val) updateHeader(new Date(val + 'T12:00:00'));
 }
 
 function updateHeader(d) {
@@ -472,33 +517,49 @@ function updateHeader(d) {
   const pBgs    = ['#E1F5EE','#FAEEDA','#EEEDFE'];
   const pCols   = ['#0F6E56','#854F0B','#3C3489'];
   const pill = document.getElementById('hphase');
-  pill.textContent = pLabels[pi];
-  pill.style.background = pBgs[pi];
-  pill.style.color = pCols[pi];
-  const pasGoals = [5000,8000,10000];
-  document.getElementById('pas-obj-lbl').textContent = pasGoals[pi].toLocaleString('fr-FR');
+  pill.textContent = pLabels[pi]; pill.style.background = pBgs[pi]; pill.style.color = pCols[pi];
+  document.getElementById('pas-obj-lbl').textContent = [5000,8000,10000][pi].toLocaleString('fr-FR');
 }
 
-function saveKey() {
-  const k = document.getElementById('notion-key').value.trim();
-  if (k) { localStorage.setItem('notion_key_90j', k); document.getElementById('key-block').style.display = 'none'; }
-}
-
-function goStep(n) {
-  for (let i = 0; i < 5; i++) {
-    document.getElementById('p'+i).classList.toggle('active', i === n);
-    const btn = document.getElementById('s'+i);
-    btn.classList.remove('active','done-s');
-    if (i === n) btn.classList.add('active');
-    else if (document.querySelectorAll('[data-grp="'+i+'"].on').length > 0) btn.classList.add('done-s');
+// TRISTATE : neutre(0) → fait(1) → pas fait(-1) → neutre(0)
+function tristate(el) {
+  const key = el.dataset.key;
+  const cur = states[key] || 0;
+  const next = cur === 0 ? 1 : cur === 1 ? -1 : 0;
+  states[key] = next;
+  el.classList.remove('state-yes','state-no');
+  const lbl = el.querySelector('.titem-label');
+  if (next === 1)  { el.classList.add('state-yes'); lbl.textContent = '✓'; }
+  else if (next === -1) { el.classList.add('state-no');  lbl.textContent = '✗'; }
+  else { lbl.textContent = '—'; }
+  el.classList.add('just-changed');
+  setTimeout(() => el.classList.remove('just-changed'), 250);
+  // Afficher note écart alimentation si sucre = non
+  if (key === 'sucre') {
+    document.getElementById('ecart-alim-block').style.display = next === -1 ? 'block' : 'none';
   }
-  window.scrollTo({top:0, behavior:'smooth'});
+  updateStepTabs();
+  updateScore();
 }
 
-function tgl(el) {
-  el.classList.toggle('on');
-  if (el.classList.contains('on')) { el.classList.add('just-on'); setTimeout(() => el.classList.remove('just-on'), 260); }
-  updateScore();
+function getState(key) { return states[key] || 0; }
+
+function updateStepTabs() {
+  const groups = [
+    ['reveil','eau-matin','whoop-matin'],
+    ['sport','mobilite','hydratation'],
+    ['sucre','proteines','repas-struct','diner-leger'],
+    ['meditation','diarly','ecrans']
+  ];
+  groups.forEach((keys, i) => {
+    const btn = document.getElementById('s'+i);
+    btn.classList.remove('done-s','has-neg');
+    const vals = keys.map(k => getState(k));
+    const hasNeg = vals.some(v => v === -1);
+    const hasPos = vals.some(v => v === 1);
+    if (hasNeg) btn.classList.add('has-neg');
+    else if (hasPos) btn.classList.add('done-s');
+  });
 }
 
 function solo(chip, groupId) {
@@ -527,44 +588,49 @@ function renderPas() {
   document.getElementById('pas-num').textContent = pas.toLocaleString('fr-FR');
   document.getElementById('pas-pct-lbl').textContent = pct + '%';
   const fill = document.getElementById('pas-fill');
-  fill.style.width = pct + '%';
-  fill.style.background = pct >= 100 ? '#1D9E75' : pct >= 60 ? '#BA7517' : '#E24B4A';
+  fill.style.width = pct+'%';
+  fill.style.background = pct>=100 ? '#1D9E75' : pct>=60 ? '#BA7517' : '#E24B4A';
   updateScore();
 }
 
 function renderStreak() {
-  document.getElementById('streak-lbl').textContent = streak + ' jour' + (streak > 1 ? 's' : '') + ' sans sucre ajouté';
+  document.getElementById('streak-lbl').textContent = streak + ' jour' + (streak>1?'s':'') + ' sans sucre ajouté';
   const c = document.getElementById('streak-dots');
   c.innerHTML = '';
-  for (let i = 0; i < 14; i++) {
+  for (let i=0; i<14; i++) {
     const dot = document.createElement('div');
-    dot.className = 'sdot' + (i < streak-1 ? ' ok' : i === streak-1 && streak > 0 ? ' today' : '');
+    dot.className = 'sdot' + (i < streak-1 ? ' ok' : i===streak-1&&streak>0 ? ' today' : '');
     c.appendChild(dot);
   }
 }
 
-function updateScore() {
-  const checks = document.querySelectorAll('.tgl.on').length;
-  const hasEnergie = document.querySelector('#energie-chips .chip[class*="on-"]') ? 1 : 0;
-  const hasSante   = document.querySelector('#sante-chips .chip[class*="on-"]') ? 1 : 0;
-  const val = document.getElementById('date-picker').value;
-  const d = val ? new Date(val+'T12:00:00') : new Date();
-  const diff = Math.floor((d - START_DATE) / 86400000);
-  const goals = [5000,8000,10000];
-  const goal = goals[Math.min(2, Math.max(0, Math.floor(diff/30)))];
-  const pasBonus = pas >= goal ? 2 : pas >= goal*0.5 ? 1 : 0;
-  const total = checks + hasEnergie + hasSante + pasBonus;
-  const pct = Math.round(total / 17 * 100);
-  const C = 138.2;
-  document.getElementById('rprog').style.strokeDashoffset = C - C*pct/100;
-  document.getElementById('rprog').style.stroke = pct>=80 ? '#1D9E75' : pct>=50 ? '#BA7517' : '#E24B4A';
-  document.getElementById('rnum').textContent = pct + '%';
-}
-
 function updateRecSub() {
   const n = parseInt(document.getElementById('m-rec').value)||0;
-  document.getElementById('rec-sub').textContent = n>=67 ? '🟢 Vert' : n>=33 ? '🟡 Jaune' : n>0 ? '🔴 Rouge' : '';
+  document.getElementById('rec-sub').textContent = n>=67?'🟢 Vert':n>=33?'🟡 Jaune':n>0?'🔴 Rouge':'';
 }
+
+function updateScore() {
+  const allKeys = ['reveil','eau-matin','whoop-matin','sport','mobilite','hydratation','sucre','proteines','repas-struct','diner-leger','meditation','diarly','ecrans'];
+  let yes=0, no=0, neutral=0;
+  allKeys.forEach(k => { const s=getState(k); if(s===1)yes++; else if(s===-1)no++; else neutral++; });
+  const val = document.getElementById('date-picker').value;
+  const d = val ? new Date(val+'T12:00:00') : new Date();
+  const diff = Math.floor((d-START_DATE)/86400000);
+  const goals=[5000,8000,10000];
+  const goal=goals[Math.min(2,Math.max(0,Math.floor(diff/30)))];
+  const pasBonus = pas>=goal?2:pas>=goal*0.5?1:0;
+  const total = yes + pasBonus;
+  const penalty = no;
+  const net = Math.max(0, total - penalty);
+  const max = 13 + 2;
+  const pct = Math.round(net/max*100);
+  const C=138.2;
+  document.getElementById('rprog').style.strokeDashoffset = C - C*pct/100;
+  document.getElementById('rprog').style.stroke = pct>=80?'#1D9E75':pct>=50?'#BA7517':'#E24B4A';
+  document.getElementById('rnum').textContent = pct+'%';
+}
+
+function stateToCheckbox(key) { return getState(key) === 1; }
 
 function getChip(id) {
   const el = document.querySelector('#'+id+' .chip[class*="on-"]');
@@ -580,25 +646,27 @@ async function saveToNotion() {
   document.getElementById('status-msg').className = 'status';
 
   const dateVal = document.getElementById('date-picker').value || new Date().toISOString().split('T')[0];
-  const d = new Date(dateVal + 'T12:00:00');
-  const diff = Math.max(1, Math.floor((d - START_DATE) / 86400000) + 1);
-  const pi = diff<=30 ? 0 : diff<=60 ? 1 : 2;
+  const d = new Date(dateVal+'T12:00:00');
+  const diff = Math.max(1, Math.floor((d-START_DATE)/86400000)+1);
+  const pi = diff<=30?0:diff<=60?1:2;
   const phases = ['Phase 1 — Installer','Phase 2 — Intensifier','Phase 3 — Ancrer'];
   const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  const nomJour = 'J' + diff + ' — ' + days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+  const nomJour = 'J'+diff+' — '+days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
 
-  const tgls = document.querySelectorAll('.tgl');
-  const sucre  = tgls[9]  ? tgls[9].classList.contains('on')  : false;
-  const sport  = tgls[3]  ? tgls[3].classList.contains('on')  : false;
-  const matin  = [0,1,2].every(i => tgls[i] && tgls[i].classList.contains('on'));
-  const diarly = tgls[10] ? tgls[10].classList.contains('on') : false;
-  const ecrans = tgls[11] ? tgls[11].classList.contains('on') : false;
+  const sucre = getState('sucre');
+  const goals=[5000,8000,10000];
+  const goal=goals[pi];
+  const allKeys=['reveil','eau-matin','whoop-matin','sport','mobilite','hydratation','sucre','proteines','repas-struct','diner-leger','meditation','diarly','ecrans'];
+  let yes=0,no=0;
+  allKeys.forEach(k=>{const s=getState(k);if(s===1)yes++;else if(s===-1)no++;});
+  const pasBonus=pas>=goal?2:pas>=goal*0.5?1:0;
+  const score=Math.max(1,Math.min(10,Math.round((yes+pasBonus-no)/15*10)));
 
-  const goals = [5000,8000,10000];
-  const goal = goals[pi];
-  const checks = document.querySelectorAll('.tgl.on').length;
-  const score = Math.min(10, Math.round((checks/13*6) + (pas>=goal?2:pas>=goal*0.5?1:0) + (sucre?2:0)));
+  // Note écarts
+  const ecartAlim = document.getElementById('ecart-alim').value;
+  const ecartGlobal = document.getElementById('ecarts-global').value;
+  const friction = [ecartAlim, ecartGlobal].filter(Boolean).join(' | ');
 
   const props = {
     'Jour':                        { title: [{ text: { content: nomJour } }] },
@@ -607,50 +675,64 @@ async function saveToNotion() {
     'Énergie matin':               { select: { name: getChip('energie-chips') || '🟡 Correct' } },
     'Stress':                      { select: { name: getChip('stress-chips') || '⚡ Modéré' } },
     'Score global /10':            { number: score },
-    'Zéro sucre ajouté':           { checkbox: sucre },
-    'Sport / Mouvement':           { checkbox: sport },
-    'Routine matin faite':         { checkbox: matin },
-    'Routine soir faite':          { checkbox: diarly && ecrans },
-    'Note Diarly écrite':          { checkbox: diarly },
-    'Écrans off 1h avant coucher': { checkbox: ecrans },
-    'Victoire du jour':            { rich_text: [{ text: { content: document.getElementById('victoire').value || '' } }] },
-    'Intention du jour':           { rich_text: [{ text: { content: document.getElementById('intention').value || '' } }] },
+    'Zéro sucre ajouté':           { checkbox: sucre === 1 },
+    'Sport / Mouvement':           { checkbox: getState('sport') === 1 },
+    'Routine matin faite':         { checkbox: getState('reveil')===1 && getState('eau-matin')===1 },
+    'Routine soir faite':          { checkbox: getState('diarly')===1 && getState('ecrans')===1 },
+    'Note Diarly écrite':          { checkbox: getState('diarly') === 1 },
+    'Écrans off 1h avant coucher': { checkbox: getState('ecrans') === 1 },
+    'Repas structurés':            { checkbox: getState('repas-struct') === 1 },
+    'Victoire du jour':            { rich_text: [{ text: { content: document.getElementById('victoire').value||'' } }] },
+    'Intention du jour':           { rich_text: [{ text: { content: document.getElementById('intention').value||'' } }] },
+    'Friction / Difficulté':       { rich_text: [{ text: { content: friction } }] },
   };
 
-  const sleep = parseFloat(document.getElementById('m-sleep').value);
-  const rec   = parseInt(document.getElementById('m-rec').value);
-  const hrv   = parseInt(document.getElementById('m-hrv').value);
-  if (!isNaN(sleep)) props['Sommeil (h)'] = { number: sleep };
-  if (!isNaN(rec))   props['Recovery WHOOP %'] = { number: rec };
-  if (!isNaN(hrv))   props['HRV'] = { number: hrv };
-  if (eauVal > 0)    props['Eau (verres)'] = { number: eauVal };
-  if (getChip('act-chips')) props['Type activité'] = { select: { name: getChip('act-chips') } };
+  const sleep=parseFloat(document.getElementById('m-sleep').value);
+  const rec=parseInt(document.getElementById('m-rec').value);
+  const hrv=parseInt(document.getElementById('m-hrv').value);
+  if (!isNaN(sleep)) props['Sommeil (h)']={ number: sleep };
+  if (!isNaN(rec))   props['Recovery WHOOP %']={ number: rec };
+  if (!isNaN(hrv))   props['HRV']={ number: hrv };
+  if (eauVal>0)      props['Eau (verres)']={ number: eauVal };
+  if (getChip('act-chips')) props['Type activité']={ select:{ name: getChip('act-chips') } };
+  if (getChip('sante-chips')) props['Qualité sommeil']={ select:{ name: '😊 Bon' } };
 
   try {
     const resp = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
-      body: JSON.stringify({ parent: { database_id: DS_ID }, properties: props })
+      headers: { 'Authorization':'Bearer '+apiKey, 'Content-Type':'application/json', 'Notion-Version':'2022-06-28' },
+      body: JSON.stringify({ parent:{ database_id: DS_ID }, properties: props })
     });
     const data = await resp.json();
     if (resp.ok && data.id) {
-      if (sucre) { streak++; localStorage.setItem('streak_90j', streak); renderStreak(); }
+      if (sucre === 1) { streak++; localStorage.setItem('streak_90j', streak); renderStreak(); }
+      else if (sucre === -1 && streak > 0) { streak = 0; localStorage.setItem('streak_90j', 0); renderStreak(); }
       btn.classList.remove('loading'); btn.classList.add('success'); btn.textContent = '✓ Sauvegardé !';
-      showStatus('ok', nomJour + ' enregistré · Score ' + score + '/10' + (sucre ? ' · Streak : ' + streak + 'j 🔥' : ''));
+      const msg = nomJour+' · Score '+score+'/10 · '+yes+' ✓ '+no+' ✗'+(sucre===1?' · Streak sucre : '+streak+'j 🔥':sucre===-1?' · Streak remis à zéro':'');
+      showStatus('ok', msg);
     } else {
-      throw new Error(data.message || 'Erreur ' + resp.status);
+      throw new Error(data.message || 'Erreur '+resp.status);
     }
   } catch(e) {
     btn.classList.remove('loading'); btn.textContent = '💾 Sauvegarder dans Notion';
-    showStatus('err', e.message + ' — vérifie ta clé API et les connexions Notion.');
+    showStatus('err', e.message+' — vérifie ta clé API et les connexions Notion.');
   }
 }
 
 function showStatus(type, msg) {
+  const icons={ ok:'ti-circle-check', err:'ti-alert-circle', info:'ti-info-circle' };
   const el = document.getElementById('status-msg');
-  const icons = { ok:'ti-circle-check', err:'ti-alert-circle', info:'ti-info-circle' };
-  el.className = 'status ' + type;
-  el.innerHTML = '<i class="ti ' + icons[type] + '"></i><span>' + msg + '</span>';
+  el.className = 'status '+type;
+  el.innerHTML = '<i class="ti '+icons[type]+'"></i><span>'+msg+'</span>';
+}
+
+function goStep(n) {
+  for (let i=0;i<5;i++) {
+    document.getElementById('p'+i).classList.toggle('active', i===n);
+    document.getElementById('s'+i).classList.toggle('active', i===n);
+  }
+  updateStepTabs();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 init();
