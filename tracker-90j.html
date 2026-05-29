@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tracker 90j</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f6f2;
+    --bg3: #efede8;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #5a5955;
+    --text3: #9a9890;
+    --green: #1D9E75; --green-bg: #E1F5EE; --green-dark: #085041;
+    --amber: #BA7517; --amber-bg: #FAEEDA; --amber-dark: #633806;
+    --red: #E24B4A; --red-bg: #FCEBEB; --red-dark: #791F1F;
+    --purple: #534AB7; --purple-bg: #EEEDFE; --purple-dark: #26215C;
+    --blue: #185FA5; --blue-bg: #E6F1FB; --blue-dark: #042C53;
+    --r: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #18181A; --bg2: #222224; --bg3: #2a2a2c;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.18);
+      --text: #f0ede8; --text2: #a8a5a0; --text3: #6a6865;
+      --green-bg: #0a2e1f; --amber-bg: #2a1e06; --red-bg: #2a0f0f;
+      --purple-bg: #1a1840; --blue-bg: #0a1e38;
+    }
+  }
+
+  html, body { height: 100%; background: var(--bg3); }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 14px 40px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+  }
+  .h-left { display: flex; flex-direction: column; gap: 4px; }
+  .h-date { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; }
+  .h-meta { font-size: 11px; color: var(--text3); letter-spacing: 0.05em; font-weight: 400; }
+  .h-phase { display: inline-block; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 10px; margin-top: 3px; }
+
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .ring { position: relative; width: 56px; height: 56px; }
+  .ring svg { transform: rotate(-90deg); display: block; }
+  .ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text); }
+  .ring-lbl { font-size: 10px; color: var(--text3); }
+
+  /* ── STEP TABS ── */
+  .steps {
+    display: flex;
+    background: var(--bg);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .step-btn {
+    flex: 1;
+    padding: 10px 2px 8px;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    color: var(--text3);
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.3;
+    transition: all 0.15s;
+    border-right: 0.5px solid var(--border);
+  }
+  .step-btn:last-child { border-right: none; }
+  .step-btn .step-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+  .step-btn.active { background: var(--text); color: var(--bg); }
+  .step-btn.done-s { color: var(--green); }
+
+  /* ── PANELS ── */
+  .panel { display: none; flex-direction: column; gap: 12px; }
+  .panel.active { display: flex; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg);
+    border-radius: var(--r);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .card-head i { font-size: 14px; color: var(--text2); }
+  .card-head-title { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+  .card-head-hint { font-size: 10px; color: var(--text3); }
+
+  /* ── TOGGLE ITEMS ── */
+  .tgl {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
+    -webkit-user-select: none;
+  }
+  .tgl:active { background: var(--bg2); }
+  .tgl + .tgl { border-top: 0.5px solid var(--border); }
+  .tgl-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .tgl-box svg { opacity: 0; transition: opacity 0.12s; }
+  .tgl.on .tgl-box { background: var(--green-bg); border-color: transparent; }
+  .tgl.on .tgl-box svg { opacity: 1; }
+  .tgl-text { font-size: 14px; color: var(--text); flex: 1; line-height: 1.4; transition: color 0.13s; }
+  .tgl.on .tgl-text { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--border2); }
+
+  /* ── METRICS ── */
+  .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .mc {
+    padding: 12px 12px;
+    border-right: 0.5px solid var(--border);
+  }
+  .mc:last-child { border-right: none; }
+  .mc-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; margin-bottom: 6px; }
+  .mc-inp {
+    border: none; background: transparent;
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px; color: var(--text);
+    width: 100%; outline: none;
+    -webkit-appearance: none;
+  }
+  .mc-inp::placeholder { color: var(--border2); font-size: 20px; }
+  .mc-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* ── CHIPS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px; }
+  .chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text2);
+    cursor: pointer;
+    transition: all 0.14s;
+    user-select: none; -webkit-user-select: none;
+  }
+  .chip.on-green  { border-color: var(--green);  background: var(--green-bg);  color: var(--green-dark); }
+  .chip.on-amber  { border-color: var(--amber);  background: var(--amber-bg);  color: var(--amber-dark); }
+  .chip.on-red    { border-color: var(--red);    background: var(--red-bg);    color: var(--red-dark); }
+  .chip.on-purple { border-color: var(--purple); background: var(--purple-bg); color: var(--purple-dark); }
+  .chip.on-blue   { border-color: var(--blue);   background: var(--blue-bg);   color: var(--blue-dark); }
+
+  /* ── PAS ── */
+  .pas-block { padding: 14px; }
+  .pas-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .pas-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); }
+  .pas-goal-lbl { font-size: 11px; color: var(--text3); }
+  .pas-bar { height: 7px; background: var(--bg3); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+  .pas-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.3s ease, background 0.3s; }
+  .pas-controls { display: flex; gap: 6px; align-items: center; }
+  .pas-inp {
+    flex: 2; padding: 8px 10px;
+    border-radius: 10px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg2);
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px; color: var(--text);
+    outline: none; text-align: center;
+    -webkit-appearance: none;
+  }
+  .pas-inp:focus { border-color: var(--green); }
+  .pas-add {
+    flex: 1; padding: 8px 6px;
+    border-radius: 10px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; color: var(--text2);
+    cursor: pointer; text-align: center;
+  }
+  .pas-add:active { background: var(--bg3); }
+
+  /* ── NOTE ── */
+  .note-wrap { padding: 10px 14px; }
+  .note-inp {
+    width: 100%; border: none; background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--text);
+    resize: none; outline: none;
+    min-height: 60px; line-height: 1.7;
+  }
+  .note-inp::placeholder { color: var(--text3); font-style: italic; }
+
+  /* ── NAV ── */
+  .nav { display: flex; gap: 8px; margin-top: 4px; }
+  .nav-btn {
+    flex: 1; padding: 13px;
+    border-radius: var(--r);
+    border: 0.5px solid var(--border2);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text2); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav-btn:active { background: var(--bg2); }
+  .nav-btn.primary {
+    background: var(--text); color: var(--bg);
+    border-color: var(--text);
+  }
+  .nav-btn.primary:active { opacity: 0.8; }
+  .nav-btn.success { background: var(--green); color: white; border-color: var(--green); }
+  .nav-btn.loading { opacity: 0.55; pointer-events: none; }
+
+  /* ── NOTION KEY INPUT ── */
+  .key-block {
+    background: var(--bg);
+    border-radius: var(--r);
+    padding: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .key-title { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .key-title i { font-size: 14px; }
+  .key-inp {
+    width: 100%; padding: 9px 12px;
+    border-radius: 10px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg2);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--text);
+    outline: none; margin-bottom: 8px;
+  }
+  .key-inp:focus { border-color: var(--blue); }
+  .key-hint { font-size: 11px; color: var(--text3); line-height: 1.6; }
+  .key-hint a { color: var(--blue); }
+  .key-save-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg3);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; color: var(--text2);
+    cursor: pointer; margin-top: 4px;
+  }
+
+  /* ── STATUS ── */
+  .status {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .status i { font-size: 16px; flex-shrink: 0; }
+  .status.ok  { display: flex; background: var(--green-bg);  color: var(--green-dark); }
+  .status.err { display: flex; background: var(--red-bg);    color: var(--red-dark); }
+  .status.info{ display: flex; background: var(--blue-bg);   color: var(--blue-dark); }
+
+  /* ── STREAK ── */
+  .streak-block { padding: 10px 14px 12px; }
+  .streak-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .streak-dots { display: flex; gap: 4px; flex-wrap: wrap; }
+  .sdot { width: 12px; height: 12px; border-radius: 50%; background: var(--border2); transition: background 0.2s; }
+  .sdot.ok { background: var(--green); }
+  .sdot.today { background: var(--red); transform: scale(1.2); }
+
+  @keyframes pop { 0%{transform:scale(0.65)} 65%{transform:scale(1.18)} 100%{transform:scale(1)} }
+  .tgl.just-on .tgl-box { animation: pop 0.22s ease; }
+  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .panel.active { animation: fadein 0.18s ease; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="h-left">
+      <div class="h-date" id="hlabel">—</div>
+      <div class="h-meta" id="hmeta">JOUR —</div>
+      <span class="h-phase" id="hphase">Phase 1</span>
+    </div>
+    <div class="ring-wrap">
+      <div class="ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" fill="none" stroke="var(--border2)" stroke-width="3.5"/>
+          <circle id="rprog" cx="28" cy="28" r="22" fill="none" stroke="#E24B4A"
+            stroke-width="3.5" stroke-linecap="round"
+            stroke-dasharray="138.2" stroke-dashoffset="138.2"
+            style="transition:stroke-dashoffset .35s,stroke .35s"/>
+        </svg>
+        <div class="ring-num" id="rnum">0%</div>
+      </div>
+      <span class="ring-lbl">score</span>
+    </div>
+  </div>
+
+  <!-- NOTION KEY CONFIG -->
+  <div class="key-block" id="key-block">
+    <div class="key-title"><i class="ti ti-key"></i> Clé API Notion (une seule fois)</div>
+    <input class="key-inp" id="notion-key" type="password" placeholder="secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+    <div class="key-hint">
+      Récupère ta clé sur <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
+      → créer une intégration → copier la clé interne.<br>
+      Ensuite : ouvre ta base Notion → ··· → Connexions → ajouter ton intégration.
+    </div>
+    <button class="key-save-btn" onclick="saveKey()">Enregistrer la clé</button>
+  </div>
+
+  <!-- STEP TABS -->
+  <div class="steps">
+    <button class="step-btn active" id="s0" onclick="goStep(0)">
+      <span class="step-icon">🌅</span>Matin
+    </button>
+    <button class="step-btn" id="s1" onclick="goStep(1)">
+      <span class="step-icon">🏃</span>Corps
+    </button>
+    <button class="step-btn" id="s2" onclick="goStep(2)">
+      <span class="step-icon">🍽️</span>Alim
+    </button>
+    <button class="step-btn" id="s3" onclick="goStep(3)">
+      <span class="step-icon">🧠</span>Mental
+    </button>
+    <button class="step-btn" id="s4" onclick="goStep(4)">
+      <span class="step-icon">⭐</span>Bilan
+    </button>
+  </div>
+
+  <!-- PANEL 0 : MATIN -->
+  <div class="panel active" id="p0">
+    <div class="card">
+      <div class="card-head"><i class="ti ti-sun"></i><span class="card-head-title">Routine matin</span></div>
+      <div class="tgl" data-grp="0" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Réveil tôt — heure fixe respectée</span>
+      </div>
+      <div class="tgl" data-grp="0" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Grand verre d'eau avant le café</span>
+      </div>
+      <div class="tgl" data-grp="0" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Lecture WHOOP — recovery noté</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-heart-rate-monitor"></i><span class="card-head-title">Métriques WHOOP</span></div>
+      <div class="metric-row">
+        <div class="mc">
+          <div class="mc-lbl">Recovery %</div>
+          <input class="mc-inp" id="m-rec" type="number" min="0" max="100" placeholder="—" inputmode="numeric">
+          <div class="mc-sub" id="rec-sub"></div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">HRV ms</div>
+          <input class="mc-inp" id="m-hrv" type="number" placeholder="—" inputmode="numeric">
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Sommeil h</div>
+          <input class="mc-inp" id="m-sleep" type="number" step="0.5" placeholder="—" inputmode="decimal">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-stethoscope"></i><span class="card-head-title">État de santé</span></div>
+      <div class="chips" id="sante-chips">
+        <span class="chip" data-val="Forme" data-color="green" onclick="solo(this,'sante-chips')">💚 Forme</span>
+        <span class="chip" data-val="Fatigué" data-color="amber" onclick="solo(this,'sante-chips')">🟡 Fatigué</span>
+        <span class="chip" data-val="Malade/KO" data-color="red" onclick="solo(this,'sante-chips')">🔴 Malade/KO</span>
+      </div>
+    </div>
+    <div class="nav"><button class="nav-btn primary" onclick="goStep(1)">Corps →</button></div>
+  </div>
+
+  <!-- PANEL 1 : CORPS -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="card-head"><i class="ti ti-run"></i><span class="card-head-title">Mouvement</span></div>
+      <div class="tgl" data-grp="1" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Marche / activité principale faite</span>
+      </div>
+      <div class="tgl" data-grp="1" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Mobilité / étirements (10 min)</span>
+      </div>
+      <div class="tgl" data-grp="1" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">8 verres d'eau dans la journée</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-footprint"></i><span class="card-head-title">Pas du jour</span><span class="card-head-hint" id="pas-pct-lbl"></span></div>
+      <div class="pas-block">
+        <div class="pas-top">
+          <div class="pas-num" id="pas-num">0</div>
+          <div class="pas-goal-lbl">objectif <strong id="pas-obj-lbl">5 000</strong></div>
+        </div>
+        <div class="pas-bar"><div class="pas-fill" id="pas-fill" style="width:0%"></div></div>
+        <div class="pas-controls">
+          <input class="pas-inp" id="pas-inp" type="number" placeholder="Mes pas…" inputmode="numeric" oninput="setPas(this.value)">
+          <button class="pas-add" onclick="addPas(1000)">+1k</button>
+          <button class="pas-add" onclick="addPas(2000)">+2k</button>
+          <button class="pas-add" onclick="addPas(3000)">+3k</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-activity"></i><span class="card-head-title">Type d'activité</span></div>
+      <div class="chips" id="act-chips">
+        <span class="chip" data-val="Marche" data-color="green" onclick="solo(this,'act-chips')">Marche</span>
+        <span class="chip" data-val="Mobilité" data-color="blue" onclick="solo(this,'act-chips')">Mobilité</span>
+        <span class="chip" data-val="Renforcement" data-color="amber" onclick="solo(this,'act-chips')">Renforcement</span>
+        <span class="chip" data-val="Cardio" data-color="red" onclick="solo(this,'act-chips')">Cardio</span>
+        <span class="chip" data-val="Yoga/Stretching" data-color="purple" onclick="solo(this,'act-chips')">Yoga</span>
+        <span class="chip" data-val="Repos actif" data-color="green" onclick="solo(this,'act-chips')">Repos actif</span>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="goStep(0)">← Matin</button>
+      <button class="nav-btn primary" onclick="goStep(2)">Alim →</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2 : ALIM -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="card-head"><i class="ti ti-apple"></i><span class="card-head-title">Alimentation</span></div>
+      <div class="tgl" data-grp="2" id="tgl-sucre" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Zéro sucre ajouté 🔑</span>
+      </div>
+      <div class="tgl" data-grp="2" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Protéines à chaque repas</span>
+      </div>
+      <div class="tgl" data-grp="2" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Repas structurés — pas de grignotage</span>
+      </div>
+      <div class="tgl" data-grp="2" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Dîner léger avant 20h</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-droplet"></i><span class="card-head-title">Hydratation</span></div>
+      <div class="chips" id="eau-chips">
+        <span class="chip" data-val="2" onclick="setEau(this)">2 verres</span>
+        <span class="chip" data-val="4" onclick="setEau(this)">4 verres</span>
+        <span class="chip" data-val="6" onclick="setEau(this)">6 verres</span>
+        <span class="chip" data-val="8" onclick="setEau(this)">8 ✓</span>
+        <span class="chip" data-val="10" onclick="setEau(this)">10+</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-flame"></i><span class="card-head-title">Streak anti-sucre</span></div>
+      <div class="streak-block">
+        <div class="streak-lbl" id="streak-lbl">0 jour sans sucre ajouté</div>
+        <div class="streak-dots" id="streak-dots"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="goStep(1)">← Corps</button>
+      <button class="nav-btn primary" onclick="goStep(3)">Mental →</button>
+    </div>
+  </div>
+
+  <!-- PANEL 3 : MENTAL -->
+  <div class="panel" id="p3">
+    <div class="card">
+      <div class="card-head"><i class="ti ti-brain"></i><span class="card-head-title">Mental & récupération</span></div>
+      <div class="tgl" data-grp="3" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Méditation / respiration (5 min)</span>
+      </div>
+      <div class="tgl" data-grp="3" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Note Diarly écrite ce soir</span>
+      </div>
+      <div class="tgl" data-grp="3" onclick="tgl(this)">
+        <div class="tgl-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tgl-text">Écrans off 1h avant coucher</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-wave-square"></i><span class="card-head-title">Niveau de stress</span></div>
+      <div class="chips" id="stress-chips">
+        <span class="chip" data-val="😌 Faible" data-color="green" onclick="solo(this,'stress-chips')">😌 Faible</span>
+        <span class="chip" data-val="⚡ Modéré" data-color="amber" onclick="solo(this,'stress-chips')">⚡ Modéré</span>
+        <span class="chip" data-val="🔥 Élevé" data-color="red" onclick="solo(this,'stress-chips')">🔥 Élevé</span>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="goStep(2)">← Alim</button>
+      <button class="nav-btn primary" onclick="goStep(4)">Bilan →</button>
+    </div>
+  </div>
+
+  <!-- PANEL 4 : BILAN -->
+  <div class="panel" id="p4">
+    <div class="card">
+      <div class="card-head"><i class="ti ti-bolt"></i><span class="card-head-title">Énergie du jour</span></div>
+      <div class="chips" id="energie-chips">
+        <span class="chip" data-val="🔴 Épuisé"  data-color="red"   onclick="solo(this,'energie-chips')">🔴 Épuisé</span>
+        <span class="chip" data-val="🟠 Fatigué" data-color="amber" onclick="solo(this,'energie-chips')">🟠 Fatigué</span>
+        <span class="chip" data-val="🟡 Correct" data-color="amber" onclick="solo(this,'energie-chips')">🟡 Correct</span>
+        <span class="chip" data-val="🟢 Bien"    data-color="green" onclick="solo(this,'energie-chips')">🟢 Bien</span>
+        <span class="chip" data-val="⚡ Excellent" data-color="blue" onclick="solo(this,'energie-chips')">⚡ Excellent</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-sparkles"></i><span class="card-head-title">Victoire du jour</span></div>
+      <div class="note-wrap">
+        <textarea class="note-inp" id="victoire" placeholder="La meilleure chose que j'ai faite aujourd'hui…" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-arrow-right"></i><span class="card-head-title">Intention demain</span></div>
+      <div class="note-wrap">
+        <textarea class="note-inp" id="intention" placeholder="La chose la plus importante de demain…" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="goStep(3)">← Mental</button>
+      <button class="nav-btn primary" id="save-btn" onclick="saveToNotion()">💾 Sauvegarder dans Notion</button>
+    </div>
+    <div id="status-msg" class="status"></div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+const DS_ID = '335f389b-0d1f-4cad-96cb-a12870b28eed';
+const START_DATE = new Date('2026-05-29');
+
+// ── STATE ────────────────────────────────────────────────
+let pas = 0, eauVal = 0, streak = 0;
+
+// ── INIT ─────────────────────────────────────────────────
+function init() {
+  const saved = localStorage.getItem('notion_key_90j');
+  if (saved) {
+    document.getElementById('notion-key').value = saved;
+    document.getElementById('key-block').style.display = 'none';
+  }
+  streak = parseInt(localStorage.getItem('streak_90j') || '0');
+  renderStreak();
+  initDate();
+  document.getElementById('m-rec').addEventListener('input', updateRecSub);
+  updateScore();
+}
+
+function initDate() {
+  const d = new Date();
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  document.getElementById('hlabel').textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+  const diff = Math.max(1, Math.floor((d - START_DATE) / 86400000) + 1);
+  document.getElementById('hmeta').textContent = 'JOUR ' + diff;
+  const pi = diff <= 30 ? 0 : diff <= 60 ? 1 : 2;
+  const pLabels = ['Phase 1 — Installer','Phase 2 — Intensifier','Phase 3 — Ancrer'];
+  const pBgs = ['#E1F5EE','#FAEEDA','#EEEDFE'];
+  const pCols = ['#0F6E56','#854F0B','#3C3489'];
+  const pill = document.getElementById('hphase');
+  pill.textContent = pLabels[pi];
+  pill.style.background = pBgs[pi];
+  pill.style.color = pCols[pi];
+  const pasGoals = [5000,8000,10000];
+  document.getElementById('pas-obj-lbl').textContent = pasGoals[pi].toLocaleString('fr-FR');
+}
+
+function saveKey() {
+  const k = document.getElementById('notion-key').value.trim();
+  if (k) {
+    localStorage.setItem('notion_key_90j', k);
+    document.getElementById('key-block').style.display = 'none';
+  }
+}
+
+// ── STEPS ─────────────────────────────────────────────────
+function goStep(n) {
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('p'+i).classList.toggle('active', i === n);
+    const btn = document.getElementById('s'+i);
+    btn.classList.remove('active','done-s');
+    if (i === n) btn.classList.add('active');
+    else if (document.querySelectorAll('[data-grp="'+i+'"].on').length > 0) btn.classList.add('done-s');
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── TOGGLES ───────────────────────────────────────────────
+function tgl(el) {
+  el.classList.toggle('on');
+  if (el.classList.contains('on')) {
+    el.classList.add('just-on');
+    setTimeout(() => el.classList.remove('just-on'), 260);
+  }
+  updateScore();
+}
+
+function solo(chip, groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => c.className = 'chip');
+  chip.classList.add('on-' + (chip.dataset.color || 'green'));
+  updateScore();
+}
+
+function setEau(chip) {
+  document.getElementById('eau-chips').querySelectorAll('.chip').forEach(c => c.className = 'chip');
+  eauVal = parseInt(chip.dataset.val);
+  chip.classList.add(eauVal >= 8 ? 'on-green' : 'on-amber');
+  updateScore();
+}
+
+// ── PAS ───────────────────────────────────────────────────
+function setPas(v) {
+  pas = Math.max(0, parseInt(v) || 0);
+  renderPas();
+}
+function addPas(n) {
+  pas += n;
+  document.getElementById('pas-inp').value = pas;
+  renderPas();
+}
+function renderPas() {
+  const d = new Date();
+  const diff = Math.floor((d - START_DATE) / 86400000);
+  const goals = [5000,8000,10000];
+  const goal = goals[Math.min(2, Math.max(0, Math.floor(diff / 30)))];
+  const pct = Math.min(100, Math.round(pas / goal * 100));
+  document.getElementById('pas-num').textContent = pas.toLocaleString('fr-FR');
+  document.getElementById('pas-pct-lbl').textContent = pct + '%';
+  const fill = document.getElementById('pas-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = pct >= 100 ? '#1D9E75' : pct >= 60 ? '#BA7517' : '#E24B4A';
+  updateScore();
+}
+
+// ── STREAK ────────────────────────────────────────────────
+function renderStreak() {
+  document.getElementById('streak-lbl').textContent = streak + ' jour' + (streak > 1 ? 's' : '') + ' sans sucre ajouté';
+  const container = document.getElementById('streak-dots');
+  container.innerHTML = '';
+  for (let i = 0; i < 14; i++) {
+    const d = document.createElement('div');
+    d.className = 'sdot' + (i < streak - 1 ? ' ok' : i === streak - 1 && streak > 0 ? ' today' : '');
+    container.appendChild(d);
+  }
+}
+
+// ── SCORE ─────────────────────────────────────────────────
+function updateScore() {
+  const checks = document.querySelectorAll('.tgl.on').length;
+  const hasEnergie = document.querySelector('#energie-chips .chip[class*="on-"]') ? 1 : 0;
+  const hasSante   = document.querySelector('#sante-chips .chip[class*="on-"]') ? 1 : 0;
+  const d = new Date();
+  const diff = Math.floor((d - START_DATE) / 86400000);
+  const goals = [5000,8000,10000];
+  const goal = goals[Math.min(2, Math.max(0, Math.floor(diff / 30)))];
+  const pasBonus = pas >= goal ? 2 : pas >= goal * 0.5 ? 1 : 0;
+  const total = checks + hasEnergie + hasSante + pasBonus;
+  const max = 13 + 1 + 1 + 2;
+  const pct = Math.round(total / max * 100);
+  const C = 138.2;
+  document.getElementById('rprog').style.strokeDashoffset = C - C * pct / 100;
+  document.getElementById('rprog').style.stroke = pct >= 80 ? '#1D9E75' : pct >= 50 ? '#BA7517' : '#E24B4A';
+  document.getElementById('rnum').textContent = pct + '%';
+}
+
+function updateRecSub() {
+  const n = parseInt(document.getElementById('m-rec').value) || 0;
+  const sub = document.getElementById('rec-sub');
+  sub.textContent = n >= 67 ? '🟢 Vert' : n >= 33 ? '🟡 Jaune' : n > 0 ? '🔴 Rouge' : '';
+}
+
+function getChip(id) {
+  const el = document.querySelector('#' + id + ' .chip[class*="on-"]');
+  return el ? el.dataset.val : null;
+}
+
+// ── SAVE TO NOTION ────────────────────────────────────────
+async function saveToNotion() {
+  const apiKey = localStorage.getItem('notion_key_90j') || document.getElementById('notion-key').value.trim();
+  if (!apiKey) {
+    showStatus('err', 'Clé API Notion manquante — renseigne-la en haut de la page.');
+    return;
+  }
+
+  const btn = document.getElementById('save-btn');
+  btn.classList.add('loading');
+  btn.textContent = '⏳ Envoi…';
+  document.getElementById('status-msg').className = 'status';
+
+  const d = new Date();
+  const iso = d.toISOString().split('T')[0];
+  const diff = Math.max(1, Math.floor((d - START_DATE) / 86400000) + 1);
+  const pi = diff <= 30 ? 0 : diff <= 60 ? 1 : 2;
+  const phases = ['Phase 1 — Installer','Phase 2 — Intensifier','Phase 3 — Ancrer'];
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const nomJour = 'J' + diff + ' — ' + days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+
+  const tgls = document.querySelectorAll('.tgl');
+  const sucre   = tgls[9]  ? tgls[9].classList.contains('on')  : false;
+  const sport   = tgls[3]  ? tgls[3].classList.contains('on')  : false;
+  const matin   = [0,1,2].every(i => tgls[i] && tgls[i].classList.contains('on'));
+  const diarly  = tgls[10] ? tgls[10].classList.contains('on') : false;
+  const ecrans  = tgls[11] ? tgls[11].classList.contains('on') : false;
+  const routineSoir = diarly && ecrans;
+
+  // Calcul score /10
+  const checksCount = document.querySelectorAll('.tgl.on').length;
+  const goals = [5000,8000,10000];
+  const goal = goals[pi];
+  const score = Math.min(10, Math.round(
+    (checksCount / 13 * 6) +
+    (pas >= goal ? 2 : pas >= goal * 0.5 ? 1 : 0) +
+    (sucre ? 2 : 0)
+  ));
+
+  // Payload Notion API directe
+  const body = {
+    parent: { database_id: DS_ID },
+    properties: {
+      'Jour':                        { title: [{ text: { content: nomJour } }] },
+      'Date':                        { date: { start: iso } },
+      'Phase':                       { select: { name: phases[pi] } },
+      'Énergie matin':               { select: { name: getChip('energie-chips') || '🟡 Correct' } },
+      'Stress':                      { select: { name: getChip('stress-chips') || '⚡ Modéré' } },
+      'Qualité sommeil':             { select: { name: '😊 Bon' } },
+      'Sommeil (h)':                 { number: parseFloat(document.getElementById('m-sleep').value) || null },
+      'Recovery WHOOP %':            { number: parseInt(document.getElementById('m-rec').value) || null },
+      'HRV':                         { number: parseInt(document.getElementById('m-hrv').value) || null },
+      'Eau (verres)':                { number: eauVal || null },
+      'Durée activité (min)':        { number: null },
+      'Score global /10':            { number: score },
+      'Zéro sucre ajouté':           { checkbox: sucre },
+      'Sport / Mouvement':           { checkbox: sport },
+      'Routine matin faite':         { checkbox: matin },
+      'Routine soir faite':          { checkbox: routineSoir },
+      'Note Diarly écrite':          { checkbox: diarly },
+      'Écrans off 1h avant coucher': { checkbox: ecrans },
+      'Victoire du jour':            { rich_text: [{ text: { content: document.getElementById('victoire').value || '' } }] },
+      'Intention du jour':           { rich_text: [{ text: { content: document.getElementById('intention').value || '' } }] },
+    }
+  };
+
+  if (getChip('act-chips')) body.properties['Type activité'] = { select: { name: getChip('act-chips') } };
+
+  // Nettoyage des null
+  Object.keys(body.properties).forEach(k => {
+    const v = body.properties[k];
+    if (v.number === null) delete body.properties[k];
+  });
+
+  try {
+    const resp = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+
+    if (resp.ok && data.id) {
+      // Mise à jour streak
+      if (sucre) {
+        streak++;
+        localStorage.setItem('streak_90j', streak);
+        renderStreak();
+      }
+      btn.classList.remove('loading');
+      btn.classList.add('success');
+      btn.textContent = '✓ Sauvegardé !';
+      showStatus('ok', 'Journée J' + diff + ' enregistrée dans Notion · Score ' + score + '/10' + (sucre ? ' · Streak sucre : ' + streak + 'j 🔥' : ''));
+    } else {
+      throw new Error(data.message || 'Erreur Notion');
+    }
+  } catch(e) {
+    btn.classList.remove('loading');
+    btn.textContent = '💾 Sauvegarder dans Notion';
+    showStatus('err', 'Erreur : ' + e.message + '. Vérifie ta clé API et les connexions de l\'intégration.');
+  }
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('status-msg');
+  el.className = 'status ' + type;
+  const icons = { ok: 'ti-circle-check', err: 'ti-alert-circle', info: 'ti-info-circle' };
+  el.innerHTML = '<i class="ti ' + icons[type] + '"></i><span>' + msg + '</span>';
+}
+
+init();
+</script>
+</body>
+</html>
